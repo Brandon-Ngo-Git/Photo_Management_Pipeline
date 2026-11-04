@@ -1,4 +1,4 @@
-# Avery Lane Studio
+# Brandon Ngo Studio
 
 A responsive landscape and travel photography portfolio with Galleries, About, FAQ, and booking pages. The booking form checks open slots and saves reservations in MySQL.
 
