@@ -1,3 +1,4 @@
+# Keep upstream defaults and allow the result formats used by the app.
 use_default_settings: true
 search:
   formats:

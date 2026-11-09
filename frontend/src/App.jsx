@@ -1,12 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Link,
+  NavLink,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import BookingPage from "./BookingPage.jsx";
 import PhotoAdminPage from "./PhotoAdminPage.jsx";
 
-// Metadata for each page
+/* APP.jps Layout
+   - #PageData
+   - #GalleryData
+   - #GalleryInformationPage
+   - #HeaderData
+   - #FooterData
+   - #HomepageData
+   - #AboutPageData
+   - #FAQPageData
+   - #NotFoundPageData
+   - #AppDataPage
+*/
+
+// Metadata for each page. This is where all the pages are created and
+// the title and description for each page is set. If a page is not found it will default to the 404 page.
+// #PageDATA
 const pageMetadata = {
   "/": {
-    title: "Image Material — Live for the moment",
+    title: "BLACK HORIZON — Live for the moment",
     description:
       "Explore the galleries, meet the photographer, and plan a photography session with Brandon Ngo",
   },
@@ -25,16 +47,153 @@ const pageMetadata = {
     description:
       "Choose an open date and time to plan a landscape, wildlife, travel, or fine-art photography session with Brandon Ngo.",
   },
+  "/requests": {
+    title: "Photo requests — BLACK HORIZON",
+    description:
+      "Share a photography request or project idea with BLACK HORIZON.",
+  },
   "/admin": {
     title: "Studio dashboard — Brandon Ngo Photography",
     description: "Sign in to manage your private photo library.",
   },
 };
 
+// Gallery data for the site. This is where all the galleries are created
+// and the title, description, and image for each gallery is set.
+// #GalleryDATA
+const galleries = [
+  {
+    slug: "mountains",
+    title: "Mountains",
+    description:
+      "Snow-dusted peaks, alpine lakes, and the stillness of the high country.",
+    image:
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=85",
+    alt: "Snow-covered alpine peaks in the morning light",
+  },
+  {
+    slug: "wildlife",
+    title: "Wildlife",
+    description:
+      "A few quiet encounters with the animals who call these wild places home.",
+    image:
+      "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1600&q=85",
+    alt: "Wild deer among the trees in a quiet forest",
+  },
+  {
+    slug: "forests",
+    title: "Forests",
+    description:
+      "Woodland trails, deep greens, and the soft light beneath the canopy.",
+    image:
+      "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1600&q=85",
+    alt: "Sunlight filtering through a green woodland",
+  },
+  {
+    slug: "coast-and-water",
+    title: "Coast & water",
+    description:
+      "Open horizons and shifting water, from quiet shorelines to restless waves.",
+    image:
+      "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1600&q=85",
+    alt: "Blue waves rolling onto a quiet coastline",
+  },
+  {
+    slug: "golden-hour",
+    title: "Golden hour",
+    description:
+      "The brief, beautiful moments when the last light changes everything.",
+    image:
+      "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1600&q=85",
+    alt: "A glowing sunset over a misty mountain valley",
+  },
+  {
+    slug: "farther-afield",
+    title: "What even is this",
+    description:
+      "Long roads, new landscapes, and the places worth going a little farther for.",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=85",
+    alt: "A winding path through an expansive mountain landscape",
+  },
+];
+
+// This is wehre all the gallery information is stored
+// #GalleryInformationPage
+function GalleryPage() {
+  const { slug } = useParams();
+  const gallery = galleries.find((item) => item.slug === slug);
+
+  if (!gallery) {
+    return <NotFoundPage />;
+  }
+
+  const otherGalleries = galleries.filter((item) => item.slug !== slug);
+
+  return (
+    <>
+      <main>
+        <section className="gallery-detail-hero section-pad">
+          <Link className="text-link gallery-back-link" to="/#galleries">
+            All galleries <span aria-hidden="true">↖</span>
+          </Link>
+          <div className="gallery-detail-content">
+            <div className="gallery-detail-copy">
+              <p className="eyebrow">
+                PHOTO COLLECTION ·{" "}
+                {String(galleries.indexOf(gallery) + 1).padStart(2, "0")} / 06
+              </p>
+              <h1>{gallery.title}</h1>
+              <p>{gallery.description}</p>
+            </div>
+            <img src={gallery.image} alt={gallery.alt} />
+          </div>
+        </section>
+        <section className="gallery-more section-pad">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">KEEP WANDERING</p>
+              <h2>
+                Explore the other <em>collections.</em>
+              </h2>
+            </div>
+          </div>
+          <div className="category-grid">
+            {otherGalleries.map((otherGallery) => (
+              <Link
+                className="category-card"
+                to={`/galleries/${otherGallery.slug}`}
+                key={otherGallery.slug}
+              >
+                <img
+                  src={otherGallery.image}
+                  alt={otherGallery.alt}
+                  loading="lazy"
+                />
+                <span className="category-title">{otherGallery.title}</span>
+                <span className="category-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer links={<Link to="/book">Book a session</Link>} />
+    </>
+  );
+}
+
+// Header components for the site. This is where the navigation and menu for the site is created.
+// #HeaderData
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [galleriesOpen, setGalleriesOpen] = useState(false);
 
-  const closeMenu = () => setMenuOpen(false);
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setGalleriesOpen(false);
+  };
 
   return (
     <header className="site-header">
@@ -44,14 +203,17 @@ function Header() {
         aria-label="Brandon Ngo Photography home"
         onClick={closeMenu}
       >
-        Brandon Ngo <span>PHOTOGRAPHY</span>
+        BLACK HORIZON <span>PHOTOGRAPHY</span>
       </Link>
       <button
         className="menu-toggle"
         type="button"
         aria-expanded={menuOpen}
         aria-controls="primary-navigation"
-        onClick={() => setMenuOpen((open) => !open)}
+        onClick={() => {
+          setMenuOpen((open) => !open);
+          setGalleriesOpen(false);
+        }}
       >
         Menu
       </button>
@@ -61,16 +223,46 @@ function Header() {
         aria-label="Main navigation"
       >
         <NavLink className="nav-link" to="/" end onClick={closeMenu}>
-          Galleries+
+          Home
+        </NavLink>
+        <div className="nav-gallery">
+          <button
+            className="nav-link gallery-menu-toggle"
+            type="button"
+            aria-expanded={galleriesOpen}
+            aria-controls="gallery-dropdown"
+            onClick={() => setGalleriesOpen((open) => !open)}
+          >
+            Galleries+
+          </button>
+          <div
+            id="gallery-dropdown"
+            className="gallery-dropdown"
+            role="group"
+            aria-label="Gallery pages"
+            hidden={!galleriesOpen}
+          >
+            {galleries.map((gallery, index) => (
+              <NavLink
+                className="gallery-dropdown-link"
+                to={`/galleries/${gallery.slug}`}
+                key={gallery.slug}
+                onClick={closeMenu}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {gallery.title}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+        <NavLink className="nav-link" to="/faq" onClick={closeMenu}>
+          FAQ
         </NavLink>
         <NavLink className="nav-link" to="/about" onClick={closeMenu}>
           About
         </NavLink>
-        <NavLink className="nav-link" to="/faq" onClick={closeMenu}>
-          FAQ
-        </NavLink>
-        <NavLink className="nav-link" to="/admin" onClick={closeMenu}>
-          Upload
+        <NavLink className="nav-link" to="/requests" onClick={closeMenu}>
+          Requests
         </NavLink>
         <NavLink className="nav-link nav-book" to="/book" onClick={closeMenu}>
           Book a session <span aria-hidden="true">↗</span>
@@ -80,6 +272,8 @@ function Header() {
   );
 }
 
+// Footer component for the site. This is where the footer and links for the site is created.
+// #FooterData
 function Footer({ links }) {
   return (
     <footer className="site-footer">
@@ -95,7 +289,8 @@ function Footer({ links }) {
     </footer>
   );
 }
-
+// This is the home page for the site. Includes hero section, galleries, about section, journal entries, and booking banner.
+// #HomepageData
 function HomePage() {
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [photoError, setPhotoError] = useState("");
@@ -125,44 +320,8 @@ function HomePage() {
     loadUploadedPhotos();
   }, []);
 
-  const galleries = [
-    {
-      title: "Mountains",
-      image:
-        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=85",
-      alt: "Snow-covered alpine peaks in the morning light",
-    },
-    {
-      title: "Wildlife",
-      image:
-        "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=900&q=85",
-      alt: "Wild deer among the trees in a quiet forest",
-    },
-    {
-      title: "Forests",
-      image:
-        "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=900&q=85",
-      alt: "Sunlight filtering through a green woodland",
-    },
-    {
-      title: "Coast & water",
-      image:
-        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=85",
-      alt: "Blue waves rolling onto a quiet coastline",
-    },
-    {
-      title: "Golden hour",
-      image:
-        "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=85",
-      alt: "A glowing sunset over a misty mountain valley",
-    },
-    {
-      title: "Farther afield",
-      image:
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85",
-      alt: "A winding path through an expansive mountain landscape",
-    },
-  ];
+  // Journal enteries for the homepage.
+  // #JournalEntriesData
   const journalEntries = [
     {
       image:
@@ -247,7 +406,11 @@ function HomePage() {
           </div>
           <div className="category-grid">
             {galleries.map((gallery, index) => (
-              <Link className="category-card" to="/book" key={gallery.title}>
+              <Link
+                className="category-card"
+                to={`/galleries/${gallery.slug}`}
+                key={gallery.slug}
+              >
                 <img src={gallery.image} alt={gallery.alt} loading="lazy" />
                 <span className="category-number">
                   {String(index + 1).padStart(2, "0")} / 06
@@ -279,8 +442,11 @@ function HomePage() {
               <div className="uploaded-photo-grid">
                 {uploadedPhotos.map((photo) => (
                   <figure className="uploaded-photo" key={photo.id}>
-                    <img src={photo.image_url} alt={photo.alt_text} loading="lazy" />
-                    <figcaption>{photo.alt_text}</figcaption>
+                    <img
+                      src={photo.image_url}
+                      alt={photo.id}
+                      loading="lazy"
+                    />
                   </figure>
                 ))}
               </div>
@@ -368,6 +534,8 @@ function HomePage() {
   );
 }
 
+// About page for the site. Includes hero section, story section, and values section.
+// #AboutPageData
 function AboutPage() {
   return (
     <>
@@ -436,7 +604,10 @@ function AboutPage() {
             <article>
               <span>02</span>
               <h3>Let the weather in.</h3>
-              <p>Mist, rain, and first light all have a way of making a place its own.</p>
+              <p>
+                Mist, rain, and first light all have a way of making a place its
+                own.
+              </p>
             </article>
             <article>
               <span>03</span>
@@ -458,6 +629,8 @@ function AboutPage() {
   );
 }
 
+// This is where the frequently asked questions are stored for the FAQ page.
+// #FAQENTRYDATA
 const faqEntries = [
   {
     question: "What should I expect when we work together?",
@@ -491,6 +664,8 @@ const faqEntries = [
   },
 ];
 
+// Faqpage
+// #FAQPageData
 function FaqPage() {
   return (
     <>
@@ -504,7 +679,9 @@ function FaqPage() {
             <br />
             <em>good answers.</em>
           </h1>
-          <p>A few things you might be wondering before we make a plan together.</p>
+          <p>
+            A few things you might be wondering before we make a plan together.
+          </p>
         </section>
 
         <section className="faq-section">
@@ -546,6 +723,190 @@ function FaqPage() {
   );
 }
 
+// Add the Google Forms embed URL here when the form is ready to publish.
+const GOOGLE_FORM_EMBED_URL = "https://forms.gle/nE5poqJpAd3f7yAg6";
+
+function RequestsPage() {
+  return (
+    <>
+      <main className="requests-page">
+        <section className="requests-hero">
+          <div className="requests-hero-copy">
+            <p className="eyebrow">
+              <span className="eyebrow-dot"></span> YOUR IDEA, YOUR HORIZON
+            </p>
+            <h1>
+              Tell me what
+              <br />
+              <em>you imagine.</em>
+            </h1>
+            <p>
+              Have a place, a print, or a photography project in mind? Share a
+              few details and we can start shaping the idea together.
+            </p>
+            <span className="requests-note">
+              Thoughtful plans begin with a simple note.
+            </span>
+          </div>
+          <div className="requests-form-wrap">
+            <div className="requests-form-heading">
+              <div>
+                <p className="eyebrow">PROJECT INQUIRY</p>
+                <h2>Make a request</h2>
+              </div>
+              <span className="requests-form-number" aria-hidden="true">
+                01
+              </span>
+            </div>
+            <div className="requests-form-frame">
+              {GOOGLE_FORM_EMBED_URL ? (
+                <iframe
+                  src={GOOGLE_FORM_EMBED_URL}
+                  title="BLACK HORIZON photography request form"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="requests-form-placeholder">
+                  <span className="requests-form-icon" aria-hidden="true">
+                    ↗
+                  </span>
+                  <h3>Your form will live here.</h3>
+                  <p>
+                    Add your Google Form’s embed URL in{" "}
+                    <code>GOOGLE_FORM_EMBED_URL</code> to display it on this
+                    page.
+                  </p>
+                </div>
+              )}
+            </div>
+            <p className="requests-form-caption">
+              Your details are only used to follow up about your request.
+            </p>
+          </div>
+        </section>
+      </main>
+      <Footer
+        links={
+          <>
+            <Link to="/about">Meet Brandon</Link>
+            <Link to="/book">Book a session ↗</Link>
+          </>
+        }
+      />
+    </>
+  );
+}
+
+function PublicRequestCollagePage() {
+  const { requestId } = useParams();
+  const [photos, setPhotos] = useState([]);
+  const [activeLayout, setActiveLayout] = useState("mosaic");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadCollage = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(
+          `/api/requests/${encodeURIComponent(requestId)}/public-collage`,
+        );
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            typeof result.detail === "string"
+              ? result.detail
+              : "Couldn't load this collage.",
+          );
+        }
+        if (!cancelled) {
+          setPhotos(result);
+        }
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Couldn't load this collage.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadCollage();
+    return () => {
+      cancelled = true;
+    };
+  }, [requestId]);
+
+  const layouts = [
+    { id: "mosaic", label: "Mosaic" },
+    { id: "grid", label: "Classic grid" },
+    { id: "editorial", label: "Editorial" },
+  ];
+
+  return (
+    <>
+      <main className="public-collage-page">
+        <header className="public-collage-heading">
+          <div>
+            <p className="eyebrow">BLACK HORIZON · PHOTO COLLECTION</p>
+            <h1>Request collage</h1>
+          </div>
+          <span>
+            {photos.length} {photos.length === 1 ? "photo" : "photos"}
+          </span>
+        </header>
+        <div className="public-collage-tabs" role="tablist" aria-label="Collage formats">
+          {layouts.map((layout) => (
+            <button
+              className="collage-tab"
+              id={`public-collage-tab-${layout.id}`}
+              type="button"
+              role="tab"
+              aria-selected={activeLayout === layout.id}
+              aria-controls="public-collage-preview"
+              key={layout.id}
+              onClick={() => setActiveLayout(layout.id)}
+            >
+              {layout.label}
+            </button>
+          ))}
+        </div>
+        <section
+          className={`public-collage-layout public-collage-layout-${activeLayout}`}
+          id="public-collage-preview"
+          role="tabpanel"
+          aria-labelledby={`public-collage-tab-${activeLayout}`}
+        >
+          {loading && <p className="dashboard-empty">Loading collage...</p>}
+          {error && <p className="form-status" role="alert">{error}</p>}
+          {!loading && !error && photos.length === 0 && (
+            <p className="dashboard-empty">No photos have been added yet.</p>
+          )}
+          {photos.map((photo, index) => (
+            <figure className="public-collage-photo" key={photo.id}>
+              <img src={photo.image_url} alt={photo.original_filename} />
+              <span>{String(index + 1).padStart(2, "0")}</span>
+            </figure>
+          ))}
+        </section>
+      </main>
+      <Footer links={<Link to="/requests">Make a request</Link>} />
+    </>
+  );
+}
+
+// NotFoundPage for the 404 error page.
+// #NotFoundPageData
 function NotFoundPage() {
   return (
     <>
@@ -573,27 +934,57 @@ export default function App() {
 
   useEffect(() => {
     // Checks to see if theres a valid path like "./about" if not it will deafult to 404
-    const metadata = pageMetadata[location.pathname] ?? {
-      title: "Page not found — Brandon Ngo Photography",
-      description: "The page you requested could not be found.",
-    };
+    const gallery = galleries.find(
+      (item) => location.pathname === `/galleries/${item.slug}`,
+    );
+    const collagePage =
+      location.pathname.startsWith("/requests/") &&
+      location.pathname.endsWith("/collage");
+    let metadata = pageMetadata[location.pathname];
+    if (!metadata && collagePage) {
+      metadata = {
+        title: "Request collage — BLACK HORIZON",
+        description: "View a photography request collage from BLACK HORIZON.",
+      };
+    } else if (!metadata && gallery) {
+      metadata = {
+        title: `${gallery.title} — Brandon Ngo Photography`,
+        description: gallery.description,
+      };
+    } else if (!metadata) {
+      metadata = {
+        title: "Page not found — Brandon Ngo Photography",
+        description: "The page you requested could not be found.",
+      };
+    }
     document.title = metadata.title;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", metadata.description);
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (location.hash) {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location.hash, location.pathname]);
 
   // Returnsthe headers and roots for the pages including the 404 error
+  // #AppDataPage
   return (
     <>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/galleries/:slug" element={<GalleryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/faq" element={<FaqPage />} />
+        <Route path="/requests" element={<RequestsPage />} />
+        <Route
+          path="/requests/:requestId/collage"
+          element={<PublicRequestCollagePage />}
+        />
         <Route path="/book" element={<BookingPage />} />
-        <Route path="/admin" element={<PhotoAdminPage />} />
+        <Route path="/admin/*" element={<PhotoAdminPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

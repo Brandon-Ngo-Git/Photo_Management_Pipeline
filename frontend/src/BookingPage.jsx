@@ -9,6 +9,7 @@ function localDate(date) {
 }
 
 function responseErrorDetail(detail) {
+  // FastAPI validation errors arrive as a list; display them as one message.
   if (Array.isArray(detail)) {
     return detail.map((issue) => issue.msg).join(" ");
   }
@@ -34,16 +35,16 @@ export default function BookingPage() {
 
     const controller = new AbortController();
     const loadAvailability = async () => {
+      // Clear the old selection before checking slots for the new date.
       setSelectedTime("");
       setAvailableSlots([]);
       setAvailabilityMessage("Checking open times...");
 
       try {
         const query = new URLSearchParams({ date: appointmentDate });
-        const response = await fetch(
-          `/api/appointments/availability?${query}`,
-          { signal: controller.signal },
-        );
+        const response = await fetch(`/api/appointments/availability?${query}`, {
+          signal: controller.signal,
+        });
         const result = await response.json();
 
         if (!response.ok) {
@@ -71,6 +72,7 @@ export default function BookingPage() {
     };
 
     loadAvailability();
+    // Ignore stale responses if the user picks another date before this one finishes.
     return () => controller.abort();
   }, [appointmentDate]);
 

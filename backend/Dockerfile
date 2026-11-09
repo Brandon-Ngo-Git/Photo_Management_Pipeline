@@ -2,6 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Install API dependencies separately so Docker can cache them between code edits.
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

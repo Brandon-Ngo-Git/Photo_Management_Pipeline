@@ -11,10 +11,12 @@
 volumes:
   n8n-data:
   sandbox-tls:
+  # Keep database records and uploaded images across container recreation.
   mysql_data:
   photo_uploads:
 
 services:
+  # Persistent MySQL database.
   mysql:
     image: mysql:8.4
     container_name: mysql-db
@@ -29,8 +31,19 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
   
+  # FastAPI backend for bookings, availability, and photo uploads.
   api:
     build: ./backend
+    develop:
+      watch:
+        # Sync API source and restart Uvicorn instead of rebuilding on each edit.
+        - action: sync+restart
+          path: ./backend/app
+          target: /app/app
+        - action: rebuild
+          path: ./backend/requirements.txt
+        - action: rebuild
+          path: ./backend/Dockerfile
     environment:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
@@ -47,8 +60,28 @@ services:
     depends_on:
       - mysql
 
+  # Public website; also waits for the supporting n8n services to start.
   web:
     build: ./frontend
+    develop:
+      watch:
+        # The production frontend is compiled into the image, so source edits rebuild it.
+        - action: rebuild
+          path: ./frontend/src
+        - action: rebuild
+          path: ./frontend/public
+        - action: rebuild
+          path: ./frontend/index.html
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/package-lock.json
+        - action: rebuild
+          path: ./frontend/vite.config.js
+        - action: rebuild
+          path: ./frontend/config
+        - action: rebuild
+          path: ./frontend/Dockerfile
     ports:
       - "3000:80"
     depends_on:

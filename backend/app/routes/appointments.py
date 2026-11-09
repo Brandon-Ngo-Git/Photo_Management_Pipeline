@@ -2,16 +2,17 @@ import json
 import logging
 import os
 from datetime import date, datetime, time
-from typing import Literal
+from typing import Annotated, Literal
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import mysql.connector
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.database import get_connection
+from app.routes.photos import require_admin
 
 router = APIRouter(prefix="/appointments", tags=["appointments"])
 BOOKING_TIMES = (time(9), time(11), time(13), time(15))
@@ -45,6 +46,18 @@ class AppointmentCreated(BaseModel):
     appointment_date: date
     appointment_time: time
     notification_status: Literal["sent", "failed"]
+
+
+class AdminAppointment(BaseModel):
+    id: int
+    customer_name: str
+    email: EmailStr
+    phone: str | None
+    session_type: Literal["Landscape", "Wildlife", "Travel", "Fine Art"]
+    appointment_date: date
+    appointment_time: time
+    notes: str | None
+    created_at: datetime
 
 
 def _notify_n8n(appointment_id: int, appointment: AppointmentRequest) -> Literal["sent", "failed"]:
@@ -148,6 +161,29 @@ def get_availability(date: date = Query(...)) -> dict[str, object]:
         )
     ]
     return {"date": date, "available_slots": available_slots}
+
+
+@router.get("/admin", response_model=list[AdminAppointment])
+def list_admin_appointments(
+    _: Annotated[None, Depends(require_admin)],
+) -> list[dict[str, object]]:
+    connection = get_connection()
+    try:
+        cursor = connection.cursor(dictionary=True)
+        try:
+            cursor.execute(
+                """
+                SELECT id, customer_name, email, phone, session_type,
+                       appointment_date, appointment_time, notes, created_at
+                FROM appointments
+                ORDER BY appointment_date, appointment_time
+                """
+            )
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+    finally:
+        connection.close()
 
 
 @router.post(

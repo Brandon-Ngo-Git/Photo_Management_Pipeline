@@ -1,3 +1,4 @@
+# Build the single-page app, then serve only the static output with Nginx.
 FROM node:24-alpine AS build
 
 WORKDIR /app

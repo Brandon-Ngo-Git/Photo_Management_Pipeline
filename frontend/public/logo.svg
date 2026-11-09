@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="197 75 400 400" class="bh-logo bh-auto">
+  <title>Black Horizon</title>
+  <style>
+    .bh-logo { color: #0a0a0a; }
+    .bh-mark-stroke { fill: none; stroke: currentColor; stroke-width: 16; stroke-linecap: butt; stroke-linejoin: miter; }
+    .bh-fill { fill: currentColor; }
+    .bh-red { fill: #e8392a; }
+    @media (prefers-color-scheme: dark) { .bh-logo.bh-auto { color: #f5f5f5; } }
+  </style>
+
+  <path class="bh-mark-stroke" d="M355 150 V252"/>
+  <path class="bh-mark-stroke" d="M355 298 V398"/>
+  <path class="bh-mark-stroke" d="M355 150 H446 A62 62 0 0 1 446 274 H375"/>
+  <path class="bh-mark-stroke" d="M375 274 H446 A62 62 0 0 1 446 398 H355"/>
+  <path class="bh-mark-stroke" d="M277 275 H332"/>
+
+  <path class="bh-fill" fill-rule="evenodd"
+    d="M354 104 Q360 144 397 150 Q360 156 354 196 Q348 156 311 150 Q348 144 354 104 Z
+       M354 131 L366 150 L354 169 L342 150 Z"/>
+  <path class="bh-fill" fill-rule="evenodd"
+    d="M354 352 Q360 392 397 398 Q360 404 354 445 Q348 404 311 398 Q348 392 354 352 Z
+       M354 379 L366 398 L354 417 L342 398 Z"/>
+
+  <path class="bh-fill" fill-rule="evenodd"
+    d="M332 275 a23 23 0 1 0 46 0 a23 23 0 1 0 -46 0 Z
+       M342 275 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0 Z"/>
+
+  <!-- red accents: diamonds in the stars + center dot -->
+  <path class="bh-red" d="M354 131 L366 150 L354 169 L342 150 Z"/>
+  <path class="bh-red" d="M354 379 L366 398 L354 417 L342 398 Z"/>
+  <circle class="bh-red" cx="355" cy="275" r="13"/>
+</svg>
