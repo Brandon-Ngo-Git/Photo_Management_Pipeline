@@ -33,17 +33,17 @@ const pageMetadata = {
       "Explore the galleries, meet the photographer, and plan a photography session with Brandon Ngo",
   },
   "/about": {
-    title: "About — Brandon Ngo Photography",
+    title: "About — Brandon Ngo",
     description:
-      "Meet Brandon Ngo: Pacific Northwest landscape photographer, trail wanderer, and lover of quiet places.",
+      "Meet Brandon Ngo: Blacksburg landscape photographer, trail wanderer, and lover of quiet places.",
   },
   "/faq": {
-    title: "Frequently asked questions — Brandon Ngo Photography",
+    title: "Frequently asked questions — BLACK HORIZON",
     description:
       "Answers to common questions about planning and booking your photography session with Brandon Ngo Studio.",
   },
   "/book": {
-    title: "Book a session — Brandon Ngo Photography",
+    title: "Book a session — BLACK HORIZON",
     description:
       "Choose an open date and time to plan a landscape, wildlife, travel, or fine-art photography session with Brandon Ngo.",
   },
@@ -53,7 +53,7 @@ const pageMetadata = {
       "Share a photography request or project idea with BLACK HORIZON.",
   },
   "/admin": {
-    title: "Studio dashboard — Brandon Ngo Photography",
+    title: "Studio dashboard — BLACK HORIZON",
     description: "Sign in to manage your private photo library.",
   },
 };
@@ -278,7 +278,7 @@ function Footer({ links }) {
   return (
     <footer className="site-footer">
       <Link className="wordmark" to="/">
-        Brandon Ngo <span>PHOTOGRAPHY</span>
+        BLACK HORIZON <span>PHOTOGRAPHY</span>
       </Link>
       <p>
         Photographs from wild places.{" "}
