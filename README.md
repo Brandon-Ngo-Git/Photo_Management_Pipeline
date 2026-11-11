@@ -120,7 +120,7 @@ Key modules:
 
 ## Configuration and customization
 
-- `.env`: n8n settings and optional admin credentials. Do not commit this file or put secrets in source control.
+- `.env`: n8n settings and optional admin credentials.
 - `BUSINESS_TIMEZONE`: studio IANA timezone; defaults to `America/Los_Angeles`.
 - `N8N_BOOKING_WEBHOOK_URL`: booking notification webhook.
 - `PHOTO_ADMIN_USERNAME` and `PHOTO_ADMIN_PASSWORD`: admin dashboard credentials.
