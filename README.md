@@ -1,16 +1,14 @@
 # Black Horizon Studio
 
-A photography studio website and admin workspace for browsing galleries, booking sessions, managing photo requests, and organizing photos.
+Black Horizon is a photography website meant to expand photographers reach. This site acts as a portfolio and client management system where the goal is to get people into your page. To get people on the page, each client is given a public page from their photo-shoot where it acts as your portfolio and a way to share your photos with others.
 
 ## Features
 
 - Public photography portfolio with gallery, About, FAQ, and request pages.
 - Session booking with availability checks and MySQL persistence.
 - Private admin dashboard for managing bookings, public gallery photos, and form requests.
-- Per-request photo uploads: admins can attach up to 15 JPEG, PNG, or WebP images (up to 100 MB each) to a request.
 - Three request collage layouts: Mosaic, Classic grid, and Editorial.
 - Shareable public collage pages at `/requests/{requestId}/collage`. These pages show only the request's photos, not its form submission details.
-- Request fulfillment and an Archive tab in the admin dashboard.
 - n8n integration for booking notifications and form submissions.
 
 ## Run the application with Docker Compose
@@ -28,8 +26,6 @@ Open:
 - API health check: [http://localhost:8000/health](http://localhost:8000/health) (the API is not published to the host by default)
 
 Starting the `web` service starts the Compose dependencies, including the API, MySQL, and n8n services.
-
-To stop the stack, press Ctrl+C, then run:
 
 ```powershell
 docker compose down
